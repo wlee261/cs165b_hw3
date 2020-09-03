@@ -68,8 +68,6 @@ def init_centers_random(data_set, k):
     return centers
 
 
-    randint(a,b)
-
 # TODO: compute the euclidean distance from a data point to the center of a cluster
 def dist(vals, center):
     """
@@ -106,8 +104,8 @@ def get_nearest_center(vals, centers):
     min = 0
     c_idx = 0
     for i in range(len(centers)):
-        if dist(vals, center[i]) < min:
-            min = dist(vals, center[i])
+        if dist(vals, centers[i]) < min:
+            min = dist(vals, centers[i])
             c_idx = i
 
     return c_idx
@@ -190,18 +188,20 @@ def train_kmean(data_set, centers, iter_limit):
     list_nearest = []
     new_centers = []
     num_iterations = 0
-    
+    if(num_iterations > iter_limit):
+        print("could not converge within iteration limit")
+        return [], [], 0
     for i in range(len(data_set)):
         list_nearest.append(get_nearest_center(data_set[i], centers))
 
     cluster = []
-    cluster = make_cluster(list_nearest, data_set, centers)
+    cluster = make_clusters(list_nearest, data_set, centers)
     new_centers = recalculate_centers(cluster)
     num_iterations = num_iterations + 1
     if(new_centers != centers):
         return train_kmean(data_set, new_centers, iter_limit)
     
-    return new_centers, clusters, num_iterations
+    return new_centers, cluster, num_iterations
 
 
 def make_clusters(list_nearest, data_set, centers):
@@ -256,3 +256,20 @@ def sum_of_within_cluster_ss(clusters, centers):
         sss = within_cluster_ss(clusters[i], centers[i]) + sss
 
     return sss
+
+def main():
+	data = []
+    centers = []
+    final = []
+    maincluster = []
+    iterations = 0
+    data = read_data(simple.txt)
+    centers = init_centers_random
+    final, maincluster, iterations = init_centers_random(data, 3)
+    final = train_kmean(data, centers, 100)
+    
+    print(iterations)
+    print(sum_of_within_cluster_ss(maincluster, final))
+
+if __name__ == "__main__":
+	main()
