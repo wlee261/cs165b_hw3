@@ -34,7 +34,7 @@ def read_data(path):
     for i in range(len(traininglist)):
         data_set.append([])
         line_in_traininglist = traininglist[i].split(",")
-        for x in line_in_traininglist:
+        for x in range(len(line_in_traininglist)):
             data_set[i].append(float(line_in_traininglist[x]))
     
     return data_set
@@ -57,13 +57,13 @@ def init_centers_random(data_set, k):
     """
     centers = []
     list_of_int = []
-    while len(list_of_int < k):
-        r = random.randint(0, len(data_set))
+    while (len(list_of_int) < k):
+        r = random.randint(0, len(data_set)-1)
         if r not in list_of_int:
             list_of_int.append(r)
     
     for i in range(len(list_of_int)):
-        centers.append(data_set(list_of_int(i)))
+        centers.append(data_set[list_of_int[i]])
 
     return centers
 
@@ -81,10 +81,12 @@ def dist(vals, center):
          d: the euclidean distance from a data point to the center of a cluster
     """
     distance = 0
+    print(vals)
+    print(center)
     for i in range(len(vals)):
         distance = (vals[i] - center[i])**2 + distance
         
-    return sqrt(distance)
+    return math.sqrt(distance)
 
 
 
@@ -101,6 +103,7 @@ def get_nearest_center(vals, centers):
     Returns:
         c_idx: a number, the index of the center of the nearest cluster, to which the given data point is assigned to
     """
+
     min = 0
     c_idx = 0
     for i in range(len(centers)):
@@ -258,15 +261,14 @@ def sum_of_within_cluster_ss(clusters, centers):
     return sss
 
 def main():
-	data = []
+    data = []
     centers = []
     final = []
     maincluster = []
     iterations = 0
-    data = read_data(simple.txt)
-    centers = init_centers_random
-    final, maincluster, iterations = init_centers_random(data, 3)
-    final = train_kmean(data, centers, 100)
+    data = read_data('simple.txt')
+    centers = init_centers_random(data, 3)
+    final, maincluster, iterations = train_kmean(data, centers, 100)
     
     print(iterations)
     print(sum_of_within_cluster_ss(maincluster, final))
