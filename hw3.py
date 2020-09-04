@@ -3,8 +3,9 @@
 import random
 import math
 import numpy as np
-import matplotlib.pyplot as plt
 import matplotlib as mpl
+mpl.use('Agg')
+import matplotlib.pyplot as plt
 
 #TODO: Read the input file and store it in the data structure
 def read_data(path):
@@ -81,8 +82,8 @@ def dist(vals, center):
          d: the euclidean distance from a data point to the center of a cluster
     """
     distance = 0
-    print(vals)
-    print(center)
+    #print(vals)
+    #print(center)
     for i in range(len(vals)):
         distance = (vals[i] - center[i])**2 + distance
         
@@ -104,7 +105,7 @@ def get_nearest_center(vals, centers):
         c_idx: a number, the index of the center of the nearest cluster, to which the given data point is assigned to
     """
 
-    min = 0
+    min = 100000
     c_idx = 0
     for i in range(len(centers)):
         if dist(vals, centers[i]) < min:
@@ -144,9 +145,10 @@ def vect_avg(s, n):
         s: a list of numerical values: the averaging result of n lists.
     """
     avg = []
+
     for i in range(len(s)):
         avg.append(s[i]/n)
-    
+    #print avg
     return avg
 
 # TODO: return the updated centers.
@@ -165,11 +167,12 @@ def recalculate_centers(clusters):
     for x in range(len(clusters)):
         count = 0
         sum = []
+        for y in range(len(clusters[x][0])):
+            sum.append(0)
         for i in range(len(clusters[x])):
             sum = vect_add(sum, clusters[x][i])
             count = count + 1
         centers.append(vect_avg(sum, count))
-
     return centers
 
 
@@ -204,18 +207,19 @@ def train_kmean(data_set, centers, iter_limit):
     if(new_centers != centers):
         return train_kmean(data_set, new_centers, iter_limit)
     
+
     return new_centers, cluster, num_iterations
 
 
 def make_clusters(list_nearest, data_set, centers):
-    cluster = []
+    mcluster = []
     for i in range(len(centers)):
-        cluster.append([])
+        mcluster.append([])
     
     for x in range(len(list_nearest)):
-        cluster[list_nearest[x]].append(data_set[x])
-    
-    return cluster
+        mcluster[list_nearest[x]].append(data_set[x])
+        
+    return mcluster
 # TODO: helper function: compute within group sum of squares
 def within_cluster_ss(cluster, center):
     """
@@ -261,17 +265,25 @@ def sum_of_within_cluster_ss(clusters, centers):
     return sss
 
 def main():
+   
     data = []
     centers = []
     final = []
+    xaxis = []
+    yaxis = []
     maincluster = []
     iterations = 0
-    data = read_data('simple.txt')
-    centers = init_centers_random(data, 3)
-    final, maincluster, iterations = train_kmean(data, centers, 100)
+    data = read_data('wine.txt')
     
-    print(iterations)
-    print(sum_of_within_cluster_ss(maincluster, final))
+    
+    for i in range(2,11):
+        xaxis.append(i)
+        centers = init_centers_random(data, i)
+        final, maincluster, iterations = train_kmean(data, centers, 100)
+        yaxis.append(sum_of_within_cluster_ss(maincluster, final))
+
+    plt.plot(xaxis, yaxis)
+    plt.savefig('plot.png')
 
 if __name__ == "__main__":
 	main()
